@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+</head>
+<body>
+    
+</body>
+</html>
+<script src="jsweb.js"></script>
+<script>
+    _jsweb.use(["jquery"], function(){
+        console.log($);
+        console.log(this.getParam("a"));
+        console.log(this.Base64Encode("11111111"));
+        console.log(this.Base64Decode("MTExMTExMTE="));
+        console.log(this.getTerminal());
+        console.log(this.dateFormate("yyyy-MM-dd hh:mm:ss", new Date()));
+
+        ajaxpolling({
+            url:"test.php",
+            type: "get",
+            dataType: "json",
+            data: {}
+        }, {
+            times: 3,
+            interval: 1000
+        }, function(res){
+            this.abort();
+            console.log(res);
+        });
+
+        req('tests.php', {
+            method: "get",
+            data: {},
+            dataType: "json"
+        }, function(res){
+            console.log(res);
+        }, function(res){
+            console.log(res);
+        });
+    })
+</script>
