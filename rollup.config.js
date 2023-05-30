@@ -18,7 +18,7 @@ export default {
 		{
 			file: "dist/index.js",
 			format: "umd",
-			name: "index",
+			name: "jsweb",
 		},
 	],
 	plugins: [

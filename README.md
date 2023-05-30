@@ -6,7 +6,7 @@
 npm i @phaoerjs/jsweb
 ```
 
-## Useage
+## Usage
 
 - **CommonJs**
 
@@ -32,14 +32,16 @@ import { Request } from "@phaoerjs/jsweb";
 ## Api
 
 - Request
+
   http request client base on [axios](https://github.com/axios/axios)
-  | **parameter** | **type** | **default** | **isrequired**
-  |:----------|:----------|:----------|:----------
-  | `url` | string | '' | true
-  | `method` | string | get | false
-  | `data` | object | {} | false
-  | `cancel_tip` | boolean | false | false
-  | `option` | axios.option | {} | false
+
+  | **parameter** | **type**     | **default** | **isrequired** |
+  | :------------ | :----------- | :---------- | :------------- |
+  | `url`         | string       | ''          | true           |
+  | `method`      | string       | get         | false          |
+  | `data`        | object       | {}          | false          |
+  | `cancel_tip`  | boolean      | false       | false          |
+  | `option`      | axios.option | {}          | false          |
 
   ```jsx
   ...
@@ -48,9 +50,9 @@ import { Request } from "@phaoerjs/jsweb";
         url: "xxxxxxx",
         data: {
             page: 1,
-            page_size: 10,
-            cancel_tip: true
-        }
+            page_size: 10
+        },
+        cancel_tip: true
     });
 
     const getData = async () => {
@@ -79,6 +81,7 @@ import { Request } from "@phaoerjs/jsweb";
   ```
 
 - catchErrorHandle
+
   you can use this method to resolve all error types
 
   ```javascript
@@ -100,10 +103,12 @@ import { Request } from "@phaoerjs/jsweb";
   ```
 
 - getEndTime
+
   ```javascript
   getEndTime("2023-xx-xx xx:xx:xx", timestamp || null);
   // { str: "x天x时x分x秒", day: "x", hour: "x", min: "x", sec: "x" }
   ```
+
 - Base64Encode
 
   ```javascript
@@ -122,12 +127,10 @@ import { Request } from "@phaoerjs/jsweb";
 
   ```javascript
   throttle(fn, wait);
-  // 11111
   ```
 
 - debounce
 
   ```javascript
   debounce(fn, wait, immediate);
-  // 11111
   ```
