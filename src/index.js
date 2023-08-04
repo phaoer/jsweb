@@ -1,26 +1,31 @@
 import axios from "axios";
 
 class Request {
-	constructor(param) {
-		this.param = param;
+	constructor(config) {
+		this.config = config;
 
-		const { method, data } = this.param;
+		const { method, data, option = {} } = this.config;
 
-		if (method === "get" || !method) {
-			this.param.params = data;
+		if (method.toLowerCase() === "get" || !method) {
+			this.config.params = data;
+			delete this.config.data;
 		}
 
 		this.source = axios.CancelToken.source();
 
-		this._axios = axios.create(this.param.option);
+		this._axios = axios.create({
+			...option,
+			cancelToken: this.source.token,
+		});
+
+		delete this.config.option;
 	}
 
 	send() {
 		return new Promise(async (resolve, reject) => {
 			try {
 				const res = await this._axios({
-					...this.param,
-					cancelToken: this.source.token,
+					...this.config,
 				});
 
 				if (res.status === 200) {
@@ -29,7 +34,7 @@ class Request {
 					throw res.statusText;
 				}
 			} catch (error) {
-				if (axios.isCancel(error) && this.param.cancel_tip) {
+				if (axios.isCancel(error) && this.config.cancel_tip) {
 					resolve({
 						request_is_cancel: true,
 					});
@@ -45,7 +50,7 @@ class Request {
 	}
 }
 
-function catchErrorHandle(error) {
+function catchErrorHandle(error, customErrorProperty = "message") {
 	if (typeof error === "string") {
 		return error;
 	} else if (typeof error === "object") {
@@ -55,13 +60,32 @@ function catchErrorHandle(error) {
 			return error.errorFields.length === 0
 				? "未知错误"
 				: error.errorFields[0].errors[0];
-		} else {
+		} else if (error[customErrorProperty]) {
+			return error[customErrorProperty];
+		}  else {
 			return JSON.stringify(error);
 		}
 	} else {
 		return "未知错误";
 	}
 }
+
+function getParam (paramName, url = window.location.href) {
+	const questionMarkIndex = url.indexOf("?");
+
+	if (questionMarkIndex !== -1) {
+		const queryString = url.substring(questionMarkIndex + 1);
+		const paramPairs = queryString.split("&");
+		for (const paramPair of paramPairs) {
+			const [key, value] = paramPair.split("=");
+			if (key === paramName) {
+				return decodeURIComponent(value);
+			}
+		}
+	}
+
+	return "";
+};
 
 function getTerminal() {
 	var u = navigator.userAgent;
@@ -79,10 +103,10 @@ function getTerminal() {
 }
 
 function dateFormate(fmt, date) {
-	date = date || new Date();
+	date = date instanceof Date ? date : new Date();
 	var o = {
 		"M+": date.getMonth() + 1,
-		"D+": date.getDate(),
+		"d+": date.getDate(),
 		"H+": date.getHours(),
 		"m+": date.getMinutes(),
 		"s+": date.getSeconds(),
@@ -278,6 +302,7 @@ function debounce(func, wait, immediate) {
 export {
 	Request,
 	catchErrorHandle,
+	getParam,
 	getTerminal,
 	dateFormate,
 	getEndTime,

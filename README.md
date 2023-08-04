@@ -11,7 +11,7 @@ npm i @phaoerjs/jsweb
 - **CommonJs**
 
 ```javascript
-const jsweb from "@phaoerjs/jsweb";
+const jsweb  = require("@phaoerjs/jsweb");
 ```
 
 - **ESM**
@@ -58,7 +58,7 @@ import { Request } from "@phaoerjs/jsweb";
     const getData = async () => {
         try {
             const res = await req.send();
-            // if parameter cancel_tip is set true. you will get property 'request_is_cancel' from result when http request is canceled
+            // if parameter cancel_tip is set true. you will get property "request_is_cancel" from result when http request is canceled
             if(res.request_is_cancel) {
                 console.log("request cancel");
             } else if(res.code === 200) {
@@ -85,7 +85,14 @@ import { Request } from "@phaoerjs/jsweb";
   you can use this method to resolve all error types
 
   ```javascript
-  catchErrorHandle(error);
+  catchErrorHandle(error, customErrorProperty || "message");
+  ```
+
+- getParam
+
+  ```javascript
+  getParam("id", "https://xxxxxxxxxxxxxxx?id=123" || window.location.href);
+  // 123
   ```
 
 - getTerminal
@@ -98,7 +105,7 @@ import { Request } from "@phaoerjs/jsweb";
 - dateFormate
 
   ```javascript
-  dateFormate("yyyy-MM-DD HH:mm:ss", date || null);
+  dateFormate("yyyy-MM-dd HH:mm:ss", date || null);
   // 2023-xx-xx xx:xx:xx
   ```
 
