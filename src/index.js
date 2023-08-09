@@ -6,7 +6,7 @@ class Request {
 
 		const { method, data, option = {} } = this.config;
 
-		if (method.toLowerCase() === "get" || !method) {
+		if (!method || method.toLowerCase() === "get") {
 			this.config.params = data;
 			delete this.config.data;
 		}
