@@ -11,7 +11,7 @@ npm i @phaoerjs/jsweb
 - **CommonJs**
 
 ```javascript
-const jsweb  = require("@phaoerjs/jsweb");
+const jsweb = require("@phaoerjs/jsweb");
 ```
 
 - **ESM**
@@ -35,50 +35,54 @@ import { Request } from "@phaoerjs/jsweb";
 
   http request client base on [axios](https://github.com/axios/axios)
 
-  | **parameter** | **type**     | **default** | **isrequired** |
-  | :------------ | :----------- | :---------- | :------------- |
-  | `url`         | string       | ''          | true           |
-  | `method`      | string       | get         | false          |
-  | `data`        | object       | {}          | false          |
-  | `cancel_tip`  | boolean      | false       | false          |
-  | `option`      | axios.option | {}          | false          |
+  - Configuring
+    - Request.config({ baseUrl = "", headers = {}, succCodeName, succCode, errMsgName });
+      When ***baseUrl*** and ***headers*** are set, each ***Request*** instance will inherit these configurations. ***succCodeName***, ***succCode***, and ***errMsgName*** need to be configured together. Once configured, the API data will only be returned if it conforms to the specified configuration; otherwise, an error will be thrown. By default, the data will be directly returned if the status is 200.
+  - Creating a Request Instance
+    | **parameter** | **type** | **default** | **isrequired** |
+    | :------------ | :----------- | :---------- | :------------- |
+    | `url` | string | '' | true |
+    | `method` | string | get | false |
+    | `data` | object | {} | false |
+    | `cancel_tip` | boolean | false | false |
+    | `option` | axios.option | {} | false |
 
-  ```jsx
-  ...
-  useEffect(() => {
-    const req = new Request({
-        url: "xxxxxxx",
-        data: {
-            page: 1,
-            page_size: 10
-        },
-        cancel_tip: true
-    });
+    ```jsx
+    ...
+    useEffect(() => {
+      const req = new Request({
+          url: "xxxxxxx",
+          data: {
+              page: 1,
+              page_size: 10
+          },
+          cancel_tip: true
+      });
 
-    const getData = async () => {
-        try {
-            const res = await req.send();
-            // if parameter cancel_tip is set true. you will get property "request_is_cancel" from result when http request is canceled
-            if(res.request_is_cancel) {
-                console.log("request cancel");
-            } else if(res.code === 200) {
-                //do something
-            } else {
-                throw new Error(res.msg);
-            }
-        } catch (error) {
-            message.error(catchErrorHandle(error));
-        }
-    }
+      const getData = async () => {
+          try {
+              const res = await req.send();
+              // if parameter cancel_tip is set true. you will get property "request_is_cancel" from result when http request is canceled
+              if(res.request_is_cancel) {
+                  console.log("request cancel");
+              } else if(res.code === 200) {
+                  //do something
+              } else {
+                  throw new Error(res.msg);
+              }
+          } catch (error) {
+              message.error(catchErrorHandle(error));
+          }
+      }
 
-    getData();
+      getData();
 
-    return () => {
-        req.cancel();
-    }
-  }, [])
-  ...
-  ```
+      return () => {
+          req.cancel();
+      }
+    }, [])
+    ...
+    ```
 
 - catchErrorHandle
 

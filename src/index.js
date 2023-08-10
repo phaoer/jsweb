@@ -4,12 +4,23 @@ class Request {
 	constructor(config) {
 		this.config = config;
 
-		const { method, data, option = {} } = this.config;
+		const { url, method, data, option = {} } = this.config;
 
 		if (!method || method.toLowerCase() === "get") {
 			this.config.params = data;
 			delete this.config.data;
 		}
+
+		const { baseURL = "", headers: defaultHeaders = {} } = Request.default;
+
+		this.config.url = baseURL + url;
+
+		const { headers = {} } = option;
+
+		option.headers = {
+			...headers,
+			...defaultHeaders,
+		};
 
 		this.source = axios.CancelToken.source();
 
@@ -21,15 +32,30 @@ class Request {
 		delete this.config.option;
 	}
 
+	static config(data) {
+		this.default =
+			Object.prototype.toString.call(data) === "[object Object]" ? data : {};
+	}
+
 	send() {
 		return new Promise(async (resolve, reject) => {
 			try {
+				const { succCodeName, succCode, errMsgName } = Request.default;
+
 				const res = await this._axios({
 					...this.config,
 				});
 
 				if (res.status === 200) {
-					resolve(res.data);
+					if (succCodeName && succCode && errMsgName) {
+						if (res.data[succCodeName] === succCode) {
+							resolve(res.data);
+						} else {
+							reject(catchErrorHandle(res.data[errMsgName]));
+						}
+					} else {
+						resolve(res.data);
+					}
 				} else {
 					throw res.statusText;
 				}
@@ -62,7 +88,7 @@ function catchErrorHandle(error, customErrorProperty = "message") {
 				: error.errorFields[0].errors[0];
 		} else if (error[customErrorProperty]) {
 			return error[customErrorProperty];
-		}  else {
+		} else {
 			return JSON.stringify(error);
 		}
 	} else {
@@ -70,7 +96,7 @@ function catchErrorHandle(error, customErrorProperty = "message") {
 	}
 }
 
-function getParam (paramName, url = window.location.href) {
+function getParam(paramName, url = window.location.href) {
 	const questionMarkIndex = url.indexOf("?");
 
 	if (questionMarkIndex !== -1) {
@@ -85,7 +111,7 @@ function getParam (paramName, url = window.location.href) {
 	}
 
 	return "";
-};
+}
 
 function getTerminal() {
 	var u = navigator.userAgent;
