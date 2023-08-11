@@ -2,7 +2,9 @@ import axios from "axios";
 
 class Request {
 	constructor(config) {
-		this.config = config;
+		this.config = config || {};
+
+		this.defaultConfig = Request.default || {};
 
 		const { url, method, data, option = {} } = this.config;
 
@@ -11,7 +13,7 @@ class Request {
 			delete this.config.data;
 		}
 
-		const { baseURL = "", headers: defaultHeaders = {} } = Request.default;
+		const { baseURL = "", headers: defaultHeaders = {} } = this.defaultConfig;
 
 		this.config.url = baseURL + url;
 
@@ -40,18 +42,22 @@ class Request {
 	send() {
 		return new Promise(async (resolve, reject) => {
 			try {
-				const { succCodeName, succCode, errMsgName } = Request.default;
+				const {
+					succCodeName = "code",
+					succCode,
+					errMsgName = "msg",
+				} = this.defaultConfig;
 
 				const res = await this._axios({
 					...this.config,
 				});
 
 				if (res.status === 200) {
-					if (succCodeName && succCode && errMsgName) {
+					if (succCode) {
 						if (res.data[succCodeName] === succCode) {
 							resolve(res.data);
 						} else {
-							reject(catchErrorHandle(res.data[errMsgName]));
+							reject(catchErrorHandle(res.data[errMsgName] || "error"));
 						}
 					} else {
 						resolve(res.data);
@@ -60,10 +66,14 @@ class Request {
 					throw res.statusText;
 				}
 			} catch (error) {
-				if (axios.isCancel(error) && this.config.cancel_tip) {
-					resolve({
-						request_is_cancel: true,
-					});
+				if (axios.isCancel(error)) {
+					if (this.config.cancel_tip) {
+						resolve({
+							request_is_cancel: true,
+						});
+					} else {
+						console.warn("request is canceled");
+					}
 				} else {
 					reject(catchErrorHandle(error));
 				}

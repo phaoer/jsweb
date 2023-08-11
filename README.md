@@ -36,8 +36,9 @@ import { Request } from "@phaoerjs/jsweb";
   http request client base on [axios](https://github.com/axios/axios)
 
   - Configuring
-    - Request.config({ baseUrl = "", headers = {}, succCodeName, succCode, errMsgName });
-      When ***baseUrl*** and ***headers*** are set, each ***Request*** instance will inherit these configurations. ***succCodeName***, ***succCode***, and ***errMsgName*** need to be configured together. Once configured, the API data will only be returned if it conforms to the specified configuration; otherwise, an error will be thrown. By default, the data will be directly returned if the status is 200.
+    - Request.config({ baseURL = "", headers = {}, succCodeName = "code", succCode, errMsgName = "msg" });
+      When ***baseURL*** and ***headers*** are configured, each ***Request*** instance will be automatically equipped with this configuration. By default, as long as the ***HTTP status*** is 200, the complete data from the API will be returned.
+      You can set ***succCode*** to define the status code indicating a successful interface response. The default name for the interface status code, ***succCodeName***, is ***code***, and the default name for the interface information is ***errMsgName***, which is ***msg***.
   - Creating a Request Instance
     | **parameter** | **type** | **default** | **isrequired** |
     | :------------ | :----------- | :---------- | :------------- |
@@ -62,7 +63,7 @@ import { Request } from "@phaoerjs/jsweb";
       const getData = async () => {
           try {
               const res = await req.send();
-              // if parameter cancel_tip is set true. you will get property "request_is_cancel" from result when http request is canceled
+              // When a request is canceled, by default, the console will print 'request is canceled'. When cancel_tip is set to true, it will return { request_is_cancel: true }.
               if(res.request_is_cancel) {
                   console.log("request cancel");
               } else if(res.code === 200) {
